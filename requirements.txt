@@ -1,6 +1,6 @@
-spacy
-nltk
-Flask
-gunicorn
-https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-1.2.0/en_core_web_sm-1.2.0.tar.gz
-inflection
+spacy==3.5.0
+nltk==3.7
+Flask==2.2.3
+gunicorn==20.1.0
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0.tar.gz
+inflection==0.5.1
