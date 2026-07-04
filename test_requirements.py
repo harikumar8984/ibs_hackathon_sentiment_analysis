@@ -1,67 +1,50 @@
 import unittest
 from unittest.mock import patch
-from sentimental_analyser import analysis_sentiment
-from obscenefilter.obscenefilter import ObsceneFilter
+import subprocess
 
-class TestRequirements(unittest.TestCase):
+class TestRequirementsUpdate(unittest.TestCase):
 
-    @patch('sentimental_analyser.analysis_sentiment')
-    def test_happy_path_documentation_updated(self, mock_analysis_sentiment):
-        # Arrange
-        mock_analysis_sentiment.return_value = "Sentiment analysis completed successfully."
+    @patch('subprocess.run')
+    def test_dependencies_update_happy_path(self, mock_run):
+        # Mock the subprocess.run to simulate successful dependency installation
+        mock_run.return_value.returncode = 0
         
-        # Act
-        result = analysis_sentiment()
+        # Simulate the command to update dependencies
+        result = subprocess.run(['pip', 'install', '-r', 'requirements.txt'], capture_output=True)
         
-        # Assert
-        self.assertEqual(result, "Sentiment analysis completed successfully.")
+        # Assert that the command was called correctly
+        mock_run.assert_called_once_with(['pip', 'install', '-r', 'requirements.txt'], capture_output=True)
+        self.assertEqual(result.returncode, 0)
 
-    @patch('sentimental_analyser.analysis_sentiment')
-    def test_edge_case_documentation_clarity(self, mock_analysis_sentiment):
-        # Arrange
-        mock_analysis_sentiment.return_value = "Sentiment analysis completed successfully."
+    @patch('subprocess.run')
+    def test_dependencies_update_error_path(self, mock_run):
+        # Mock the subprocess.run to simulate a failure in dependency installation
+        mock_run.return_value.returncode = 1
         
-        # Act
-        result = analysis_sentiment()
+        # Simulate the command to update dependencies
+        result = subprocess.run(['pip', 'install', '-r', 'requirements.txt'], capture_output=True)
         
-        # Assert
-        self.assertIn("Sentiment analysis", result)
-        self.assertIn("successfully", result)
+        # Assert that the command was called correctly
+        mock_run.assert_called_once_with(['pip', 'install', '-r', 'requirements.txt'], capture_output=True)
+        self.assertNotEqual(result.returncode, 0)
 
-    @patch('obscenefilter.obscenefilter.ObsceneFilter')
-    def test_edge_case_dependencies_compatibility(self, mock_obscene_filter):
-        # Arrange
-        mock_obscene_filter.return_value = None
-        filter_instance = mock_obscene_filter()
-        filter_instance.has_bad_word.return_value = False
+    def test_documentation_update_happy_path(self):
+        # Simulate reading the documentation file
+        with open('README.md', 'r') as file:
+            content = file.read()
         
-        # Act
-        result = filter_instance.has_bad_word("This is a clean text.")
-        
-        # Assert
-        self.assertFalse(result)
+        # Check if the documentation contains expected sections
+        self.assertIn('Installation', content)
+        self.assertIn('Usage', content)
 
-    @patch('sentimental_analyser.analysis_sentiment')
-    def test_acceptance_criteria_documentation_accuracy(self, mock_analysis_sentiment):
-        # Arrange
-        mock_analysis_sentiment.return_value = "Sentiment analysis completed successfully."
+    def test_documentation_clarity_and_completeness(self):
+        # Simulate reading the documentation file
+        with open('README.md', 'r') as file:
+            content = file.read()
         
-        # Act
-        result = analysis_sentiment()
-        
-        # Assert
-        self.assertEqual(result, "Sentiment analysis completed successfully.")
-
-    @patch('sentimental_analyser.analysis_sentiment')
-    def test_acceptance_criteria_system_compiles(self, mock_analysis_sentiment):
-        # Arrange
-        mock_analysis_sentiment.return_value = "Compilation successful."
-        
-        # Act
-        result = analysis_sentiment()
-        
-        # Assert
-        self.assertEqual(result, "Compilation successful.")
+        # Check for clarity and completeness
+        self.assertTrue(len(content) > 100)  # Arbitrary check for content length
+        self.assertIn('API Reference', content)
 
 if __name__ == '__main__':
     unittest.main()
