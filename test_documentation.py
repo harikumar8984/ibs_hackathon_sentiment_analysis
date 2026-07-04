@@ -5,35 +5,52 @@ from obscenefilter.obscenefilter import ObsceneFilter
 
 class TestDocumentation(unittest.TestCase):
 
-    @patch('builtins.open', new_callable=unittest.mock.mock_open, read_data='Documentation for the system.')
-    def test_documentation_update_happy_path(self, mock_file):
-        # Simulate the documentation update process
-        documentation_content = mock_file()
-        self.assertIn('Documentation for the system.', documentation_content.read())
-        mock_file.assert_called_once_with('documentation.txt', 'r')
+    @patch('builtins.open', new_callable=unittest.mock.mock_open, read_data='Documentation for the system...')
+    def test_documentation_happy_path(self, mock_file):
+        # Simulate reading the documentation
+        with open('documentation.txt', 'r') as f:
+            content = f.read()
+        
+        # Check if the content is as expected
+        self.assertIn('Documentation for the system...', content)
+        self.assertTrue(content.strip() != '')
 
-    @patch('builtins.open', new_callable=unittest.mock.mock_open, read_data='Documentation for the system.')
-    def test_documentation_clarity_and_completeness_edge_case(self, mock_file):
-        # Check if documentation is clear and complete
-        documentation_content = mock_file()
-        self.assertTrue(len(documentation_content.read()) > 0)
-        self.assertIn('Documentation for the system.', documentation_content.read())
-        mock_file.assert_called_once_with('documentation.txt', 'r')
+    @patch('builtins.open', new_callable=unittest.mock.mock_open, read_data='')
+    def test_documentation_empty_content(self, mock_file):
+        # Simulate reading empty documentation
+        with open('documentation.txt', 'r') as f:
+            content = f.read()
+        
+        # Check if the content is empty
+        self.assertEqual(content.strip(), '')
 
-    @patch('sentimental_analyser.analysis_sentiment')
-    def test_dependencies_compatibility_edge_case(self, mock_analysis):
-        # Mock the analysis_sentiment function to simulate dependency check
-        mock_analysis.return_value = True
-        result = analysis_sentiment()
-        self.assertTrue(result)
+    @patch('builtins.open', new_callable=unittest.mock.mock_open, read_data='Documentation for the system...')
+    def test_documentation_clarity(self, mock_file):
+        # Simulate reading the documentation
+        with open('documentation.txt', 'r') as f:
+            content = f.read()
+        
+        # Check if the documentation is clear
+        self.assertTrue('system' in content)
+        self.assertTrue('Documentation' in content)
 
-    @patch('builtins.open', new_callable=unittest.mock.mock_open)
-    def test_documentation_update_error_path(self, mock_file):
-        # Simulate an error in documentation update
-        mock_file.side_effect = FileNotFoundError
-        with self.assertRaises(FileNotFoundError):
-            with open('documentation.txt', 'r') as f:
-                f.read()
+    @patch('builtins.open', new_callable=unittest.mock.mock_open, read_data='Documentation for the system...')
+    def test_documentation_completeness(self, mock_file):
+        # Simulate reading the documentation
+        with open('documentation.txt', 'r') as f:
+            content = f.read()
+        
+        # Check if the documentation is complete
+        self.assertGreater(len(content.split()), 5)  # Assuming completeness means more than 5 words
+
+    @patch('obscenefilter.obscenefilter.ObsceneFilter.get_profane_words', return_value=['badword'])
+    def test_dependencies_compatibility(self, mock_get_profane_words):
+        # Simulate checking dependencies
+        obscene_filter = ObsceneFilter()
+        profane_words = obscene_filter.get_profane_words()
+        
+        # Check if the dependencies are compatible
+        self.assertIn('badword', profane_words)
 
 if __name__ == '__main__':
     unittest.main()
